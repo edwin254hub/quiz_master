@@ -1,0 +1,672 @@
+#Importing all of the libaries
+from tkinter import *
+import operator
+import pygame
+
+#Defining the main function of the home screen
+def Home():
+
+        #Function that gets the name of the user and displays it on the screen
+        def name():
+                name = entry_name.get()
+                welcome_label = Label(
+                        window,
+                        text="Hello " + name + " you may start your trivia game by clicking at the 'Start' button" ,
+                        bg = "#93b4ba",
+                        fg="#4287f5",
+                        font=("Jomhuria",35,"bold"))
+                welcome_label.place(x=75,y=300)
+                
+        #Function that creates a new window of instrcutions for the user
+        def instructions_Window():
+                instructions_Window = Tk()
+                instructions_Window.title("instructions")
+                instructions_Window.config(bg="#6378ff")
+
+                instructions = Label(
+                        instructions_Window,
+                        text = "WELCOME TO THE TRIVIA GAME!\nThere are 3 levels in the game.\nYou can choose between beginners level Intermediates level or professionals level.\nYou will have a certain amount of seconds for each question depends on your level \nGood luck!!!",
+                        font = ("Staatliches",20,"bold"),
+                        bg="#6378ff")
+                instructions.pack()
+
+                back_but = Button(
+                        instructions_Window,
+                        text="Back",
+                        bg="#6378ff",
+                        font=("Arial", 20,"bold"),
+                        width=10,
+                        height=5,
+                        command=instructions_Window.destroy)
+                back_but.pack()
+
+        #Function that clears the window
+        def clear():
+                for widgets in window.winfo_children():
+                        widgets.destroy()
+
+
+        clear()
+
+        #Changing the background color of thw window
+        window.config(bg="#93b4ba")
+
+        #Displaying on the screen a 'welcome back' text
+        label_welcome = Label(
+                window,
+                text="Welcome Back To Our Trivia Game!",
+                font=("Akaya Kanadaka",80,"bold"),
+                bg = "#93b4ba")
+        label_welcome.pack()
+
+        #Asking the user to enter his name
+        label_enter_name = Label(
+                window,
+                text="Enter you name:",
+                font=("Lato",50,"bold"),
+                bg = "#93b4ba",
+                fg="#3038d1")
+        label_enter_name.pack(side=LEFT)
+
+        #Displaying a entry widget
+        entry_name = Entry(window,font=("Arial",40))
+        entry_name.pack(side=LEFT)
+
+        #Dispalying a sumbit button to sumbit the name 
+        username_but = Button(
+                window,
+                text="Sumbit",
+                font=("Jomhuria",10,"bold"),
+                width=15,
+                height=4,
+                command=name,
+                bg="#0f0f0f",
+                fg="white")
+        username_but.pack(side=LEFT)
+
+        #Quit button
+        quit_but = Button(
+                window,
+                text="Quit",
+                font=("Jomhuria",25,"bold"), 
+                width=11,
+                height=5,
+                command=quit,
+                bg="#b5aa72")
+        quit_but.place(x=0,y=860)
+
+        #Start button to start the game
+        start_but = Button(
+                window,
+                text="Start",
+                font=("Jomhuria",25,"bold"),
+                width=11,
+                height=5,
+                command=trivia,
+                bg="#a1ad90")
+        start_but.place(relx = 1.0,rely = 1.0,anchor =SE)
+
+        #Instructions button to show the instructions for the game
+        instructions_but = Button(
+                window,
+                text="Instructions",
+                font=("Jomhuria",25,"bold"),
+                width=11,
+                height=5,
+                command=instructions_Window,
+                bg="#626363")
+        instructions_but.pack(side=RIGHT)
+
+#The main function for the game itself
+def trivia():
+
+        #A function that will be displayed when the game is over
+        def End(correct_guesses):
+
+                #A play again function that starts the game over
+                def play_again():
+                        trivia()
+
+                #Shows the amount of questions that you answered correctly
+                score_label = Label(
+                        window,
+                        text="You have answered " + str(correct_guesses) + " correct question",
+                         font=("Playfair Display SC", 40, "bold"),
+                        bg="#6378ff",
+                        fg="#730505",
+                        height=2)
+                score_label.pack()
+
+                #Converting the amount of question that you answered correctly to a score
+                score = int((correct_guesses/len(questions))*100)
+
+                #Shows your score
+                score_precent = Label(
+                        window,
+                        text="You score is " + str(score) + "%",
+                        font=("Playfair Display SC", 45, "bold"),
+                        bg="#6378ff",
+                        fg="#52504d",
+                        height=2)
+                score_precent.pack()
+
+                #Play again button to start again the game
+                play_again_but = Button(
+                        window,
+                        text="Play Again",
+                        bg="#28a663",
+                        width=11,
+                        height=5,
+                        font=("Russo One", 25, "bold"),
+                        command=play_again)
+                play_again_but.place(relx = 1.0,rely = 1.0,anchor =SE)
+
+                #Home button which will take you to the home screen
+                home_but = Button(
+                        window,
+                        text="Home",
+                        bg="#7b22d4",
+                        height=5,
+                        width=11,
+                        font=("Russo One", 25, "bold"),
+                        command=Home)
+                home_but.pack(side=BOTTOM)
+
+                #Quit button
+                quit_but = Button(
+                        window,
+                        text="Quit",
+                        font=("Jomhuria",25,"bold"),
+                        width=11,
+                        height=5,
+                        command=quit,
+                        bg="#b5aa72")
+                quit_but.place(x=0,y=860)
+
+                #Saving each username and it's score
+                leaderboard[username] = score
+
+                #Sorting the leaderboard by score
+                sorted_leaderboard = dict( sorted(leaderboard.items(), key=operator.itemgetter(1),reverse=True))
+
+                #Dispalying 'Leaderboard' text
+                lead_lab = Label(
+                        window,
+                        text="Leaderboard: ",
+                        font=("Arial",50,"bold"),
+                        bg="#6378ff")
+                lead_lab.place(x=0,y=400)
+                y = 400
+
+                #Displaying the leaderboard after it is sorted by the score of each player
+                for user in sorted_leaderboard:
+                        leaderboard_label = Label(
+                                window,
+                                text="Username: "+str(user)+" "+"Score: "+str(sorted_leaderboard[user]),
+                                font=("Arial",50,"bold"),
+                                bg="#6378ff",
+                                fg="#000000") 
+                        leaderboard_label.place(x=450,y=y)
+                        y = y + 100
+
+        #A function that checks if the answer is correct
+        def check_answer(answer, guess):
+
+                if answer == guess:
+                        return 1
+                else:
+                        return 0
+        #A function that clears the screen
+        def clear():
+                WaitState.set(1)
+                for widgets in window.winfo_children():
+                        widgets.destroy()
+                window.after_cancel(window.after_id)
+
+        #A functions that gets the user's username and clears the screen
+        def user_name():
+                global username
+                WaitSate_username.set(1)
+                username = entry_username.get()
+                for widgets in window.winfo_children():
+                        widgets.destroy()
+
+        #A buttton that will take you to the begginer's questions, clear the screen and define the amount of seconds for its level
+        #It directs us to the questions of each level as well
+        def beginners():
+                global count
+                global questions
+                global options
+                WaitSate_difficulty.set(1)
+                questions = questions_beg
+                options = options_beg
+                count = 20
+                beginners.has_been_called = True
+                pass
+                for widgets in window.winfo_children():
+                        widgets.destroy()
+        
+        #A buttton that will take you to the intermediate's questions, clear the screen and define the amount of seconds for its level
+        #It directs us to the questions of each level as well
+        def Intermediate():
+                global count
+                global questions
+                global options
+                WaitSate_difficulty.set(1)
+                questions = questions_int
+                options = options_int
+                count = 15
+                Intermediate.has_been_called = True
+                pass
+                for widgets in window.winfo_children():
+                        widgets.destroy()  
+
+        #A buttton that will take you to the professional's questions, clear the screen and define the amount of seconds for its level
+        #It directs us to the questions of each level as well
+        def professional():
+                global count
+                global questions
+                global options
+                WaitSate_difficulty.set(1)
+                questions = questions_pro
+                options = options_pro
+                count = 10
+                #Defining that function has been called
+                professional.has_been_called = True
+                pass
+                #Clears the screen
+                for widgets in window.winfo_children():
+                        widgets.destroy()
+
+        #When the time is up this function is caleld
+        def clear_time():
+                #Clears the window
+                clear()
+                #Playing a music
+                play_wrong()
+
+                #Displaying a 'Time is up' text
+                time_up_label = Label(
+                        window,
+                        text="Time is up",
+                        bg = "#6378ff",
+                        fg="#000000",
+                        image = redImage,
+                        compound='left',
+                        font=("Arial", 100,"bold"))
+                time_up_label.place(relx = 0.5,rely = 0.5,anchor = 'center')
+
+                #After 2.5 seconds moves to the next question
+                window.after(2500, clear)
+                
+                #Defining that function has been called
+                clear_time.has_been_called = True
+                pass
+                continue_but.wait_variable(WaitState)
+
+
+        #The timer function
+        def button_countdown(i, label):
+                #If statement that checks if the is up already
+                if i > 0:
+                        #A seconds goes down
+                        i -= 1
+                        #Changing the label to the new seconds
+                        label.set(i)
+                        #After 1 second repeat that if the time is not up
+                        window.after_id = window.after(1000, lambda: button_countdown(i, label))
+                #If the time is up it calls a function that displays that the 'Time is up'
+                else:
+                        clear_time()
+
+        #If the continue button is clicked let the user to click it
+        def clicked():
+                continue_but["state"] = NORMAL
+
+        #A function that plays a music when you answer the question correct
+        def play_correct():
+                pygame.mixer.music.load("Correct.mp3")
+                pygame.mixer.music.play(loops=0)
+
+        #A function that plays a music when you answer the question wrong
+        def play_wrong():
+                pygame.mixer.music.load("Wrong.mp3")
+                pygame.mixer.music.play(loops=0)
+
+        #A function that plays a music when you are answering the questions
+        def play_thinking():
+                pygame.mixer.music.load("Thinking.mp3")
+                pygame.mixer.music.play(loops=0)
+
+        #A function that stops the music
+        def stop_music():
+                pygame.mixer.music.stop()
+
+        #Changing the background of the screen
+        window.config(bg="#6378ff")
+
+        pygame.mixer.init()
+
+        #Defining all of the variables
+        x = StringVar()
+        WaitState = StringVar()
+        WaitSate_username = StringVar()
+        WaitSate_difficulty = StringVar()
+        i = 0
+        correct_guesses = 0
+
+        button_label = StringVar()
+        
+        #Defining two images
+        trophyImage = PhotoImage(file="trophy.png")  
+        redImage = PhotoImage(file="red.png")
+
+        #Setting the waitState variable to 1
+        WaitState.set(1)
+
+        #clears the screen
+        for widgets in window.winfo_children():
+                widgets.destroy()
+
+
+        label_enter_username = Label(
+                window,
+                text="Enter your username:",
+                font=("Lato",50,"bold"),
+                bg = "#6378ff",
+                fg="#000000")
+        label_enter_username.pack(side=LEFT)
+
+        entry_username = Entry(
+                window,
+                font=("Arial",40))
+        entry_username.pack(side=LEFT)
+
+        #A continue button that moves to the next window which is the difficulty of the game
+        username_but = Button(
+                window,
+                text="Continue",
+                font=("Press Start 2P",10,"bold"),
+                width=15,
+                height=4,
+                command=user_name,
+                bg="#000000",
+                fg="white")
+        username_but.pack(side=LEFT)
+        username_but.wait_variable(WaitSate_username)
+
+
+        label_difficulty = Label(
+                window,
+                text="Choose your difficulty:",
+                font=("Lato",100,"bold"),
+                bg = "#6378ff",
+                fg="#000000")
+        label_difficulty.place(x=200,y=0)
+
+        #A button that will take us to the beginners's level
+        button_beg = Button(
+                window,
+                text="Beginner",
+                font=("Press Start 2P",25,"bold"),
+                width=25,
+                height=10,
+                command=beginners,
+                bg="#bf0704",
+                fg="white")
+        button_beg.place(x=150,y=300)
+
+        #A button that will take us to the intermediate's level
+        button_int = Button(
+                window,
+                text="Intermediate",
+                font=("Press Start 2P",25,"bold"),
+                width=25,
+                height=10,
+                command=Intermediate,
+                bg="#bf0704",
+                fg="white")
+        button_int.place(x=700,y=300)
+
+        #A button that will take us to the intermediate's level
+        button_pro = Button(
+                window,
+                text="Professional",
+                font=("Press Start 2P",25,"bold"),
+                width=25,
+                height=10,
+                command=professional,
+                bg="#bf0704",
+                fg="white")
+        button_pro.place(x=1250,y=300)
+
+        #Waiting for the user to select a level
+        button_pro.wait_variable(WaitSate_difficulty)
+
+
+        #Running a for loop that iterates after each question
+        for key in questions:
+                #Playing the thinking music
+                play_thinking()
+
+                clear_time.has_been_called = False
+                j = 0
+
+                #Set the timer according to the level selected by the user
+                button_label.set(count)
+
+                #Dispalying the current seconds
+                timer_label = Label(
+                        window,
+                        textvariable=button_label,
+                        bg="#6378ff",
+                        fg="#ff0000",
+                        font=("Arial",46,"bold"))
+                timer_label.pack()
+                button_countdown(count, button_label)
+
+
+                question_number = 0
+                #Dispalying the question
+                question_label = Label(
+                        window,
+                        text=key,
+                        bg="#6378ff",
+                        fg="#e8e8e8",
+                        font=("Squada One",50,"bold"),
+                        width=1920,
+                        height=2)
+                question_label.pack()
+
+                #A continue button that will take you ro the next question and you can click it once you selected a answer
+                continue_but = Button(
+                        window,
+                        text="Continue",
+                        font=("Knewave",25,"bold"),
+                        bg="#942222",
+                        width=11,
+                        height=5,
+                        state=DISABLED,
+                        command=clear)
+                continue_but.place(relx = 0.5,rely = 1.0,anchor =S)
+
+                #Another for loop that dispalying all of the possible answers depending of how many possible answers there are
+                for index in options[question_number-1]:
+
+                        #Dispalying each question
+                        options_radio = Radiobutton(
+                                window,
+                                text=options[i][j],
+                                variable=x,
+                                value=options[i][j],
+                                bg="#6378ff",
+                                font=("Squada One",30,"bold"),
+                                fg="#000000",
+                                height=3,
+                                indicatoron=0,
+                                activebackground="#209799",
+                                command=clicked,
+                                width=1920)
+                        options_radio.pack(anchor=W)
+
+
+                        j += 1
+
+                #Waiting for the user to continue
+                continue_but.wait_variable(WaitState)
+                
+                #Gets the answer that the user selected
+                guess = x.get()
+                guess = list(guess)
+                for num in guess:
+                       guess = num
+                       break 
+                
+                #Counting the amount of correct answers and calling the function that the checks if the answer is correct
+                correct_guesses = correct_guesses + check_answer(questions.get(key), guess)
+                
+                #Checking if the answer is correct
+                correct = check_answer(questions.get(key), guess)
+
+                clear()
+                #If statement to check if the time is up already
+                if clear_time.has_been_called == False:
+                        #If statement that checks if the answer is correct and if it is dispalying a 'correct' text and an image
+                        if correct == 1:
+                                play_correct()
+                                correct_label = Label(window,
+                                        text="Correct!",
+                                        bg="#6378ff",
+                                        fg="#ffaa00",
+                                        font=("Arial",100,"bold"),
+                                        image = trophyImage,
+                                        compound='left')
+                                correct_label.place(relx = 0.5,rely = 0.5,anchor = 'center')
+
+                                #Waiting 2.5 seconds and moving to the next question
+                                window.after(2500, clear)
+
+                                continue_but.wait_variable(WaitState)
+                        #If the answer is wrong it is dispalying 'wrong' text and and image
+                        elif correct == 0:
+                                play_wrong()
+                                wrong_label = Label(
+                                        window,
+                                        text="Wrong!",
+                                        bg="#6378ff",
+                                        fg="#000000",
+                                        font=("Franklin Gothic Medium",100,"bold"),
+                                        image=redImage,
+                                        compound='left')
+                                wrong_label.place(relx = 0.5,rely = 0.5,anchor = 'center')
+
+                                #Waiting 2.5 seconds and moving to the next question
+                                window.after(2500, clear)
+
+                                continue_but.wait_variable(WaitState)
+                
+
+                question_number = question_number + 1
+                i += 1
+                #Stops the music 
+                stop_music()
+
+        #Dispalying the end screen
+        End(correct_guesses)
+
+
+#Questions for the professional level
+questions_pro = {
+"How old is the universe?": "B",
+"What are the three primary colors?": "B",
+"How many bones does a human body have?": "A",
+"Which planet has the most gravity in the solar system?": "C",
+"What is the height of the tallest man in the world in 2021?": "D",
+"What is the most valued company in the world?": "A",
+"Who created python?": "B",
+"How many oceans are there in the world?": "A",
+"What is the distance between earth and mars?": "A",
+"In which year the first windows version was released?": "D"
+}
+
+#Options for the professional level
+options_pro = [["A. 5.3 billion years old", "B. 13.8 billion years old", "C. 115.5 billion years ago", "D. 241.1 billion years old"],
+          ["A. Red, yellow, and green", "B. Red, yellow, and blue", "C. Green, red, and blue", "D. Black, yellow, and red"],
+          ["A. 206", "B. 54", "C. 251", "D. 180"],
+          ["A. Neptune","B. Mars", "C. Jupiter", "D. Earth"],
+          ["A. 2.35 meters", "B. 2.47 meters","C. 2.71 meters", "D. 2.51 meters"],
+          ["A. Apple", "B. Google", "C. Microsoft", "D. Amazon"],
+          ["A. Brendan Eich", "B. Van Rossum", "C. Bjarne Stroustrups", "D. Dennis Ritchie"],
+          ["A. Five", "B. Ten", "C. Seven", "D. Three"],
+          ["A. 366.82 million km", "B. 251.87 milion km", "C. 1.578 milion km", "D. 350.34 milion km"],
+          ["A. 1999", "B. 2001", "C. 1983", "D. 1985"]]
+
+#Questions for the intermediate level
+questions_int = {
+"Who was the first person in space?": "C",
+"What is the biggest technology company in South Korea?": "C",
+"Which movie made the most money?": "A",
+"How many bones do sharks have in their bodies?": "D",
+"How many hearts does an octopus have?": "B",
+"What is the most populated country?": "A",
+"In what years did the world war II took place?": "D",
+"The Statue of Liberty was given to the US by which country?": "B",
+"What is the closet planet to the sun?": "D",
+"What is the heaviest creature on earth?": "A"
+}
+
+#Options for the intermediate level
+options_int = [["A. Alan Shepard", "B. Neil Armstrong", "C. Yuri Gagarin", "D. Buzz Aldrin"],
+          ["A. Apple", "B. Xiaomi", "C. Samsung", "D. Huawei"],
+          ["A. Avatar", "B. Avengers: Endgame", "C. Titanic", "D. Star Wars: Episode VII"],
+          ["A. 5","B. 15", "C. 8", "D. 0"],
+          ["A. Six", "B. Three","C. One", "D. Five"],
+          ["A. China","B. Russia", "C. India", "D. United States"],
+          ["A. 1914-1921", "B. 1945-1948", "C. 1928-1935", "D. 1939-1945"],
+          ["A. Canda", "B. France", "C. United Kingdom", "D. Mexico"],
+          ["A. Jupiter", "B. Mars", "C. Venus", "D. Mercury"],
+          ["A. Blue whale", "B. Sperm whale", "C. Bowhead whale", "D. Southern right whale"]]
+
+
+
+#Questions for the begginers level
+questions_beg = {
+"How many players are there in a basketball game?": "A",
+"Who was the first presidnet of the U.S?": "B",
+"In which year the first covid-19 case was discovered?": "C",
+"How many continents are there in the world?": "A",
+"How many planets are there in the solar system?": "D",
+"What is the capital city of Spain?": "B",
+"What was the first soft drink in space?": "B",
+"Who holds the record for 100 metres dash?": "C",
+"What’s the hardest rock?": "A",
+"How many states does the U.S is have?": "B"
+}
+
+#Options for the begginers level
+options_beg = [["A. 10", "B. 5", "C. 12", "D. 8"],
+          ["A. Abraham Lincoln", "B. George Washington", "C. John Tyler", "D. John Adams"],
+          ["A. 2018", "B. 2001", "C. 2019", "D.2020"],
+          ["A. Seven","B. Five", "C. Four", "D. Six"],
+          ["A. Six", "B. Seven","C. Nine", "D. Eight"],
+          ["A. Barcelona", "B. Madrid", "C. Lisbon", "D. Paris"],
+          ["A. Water", "B. Coca Cola", "C. Fanta", "D. Pepsi"],
+          ["A. Asafa Powell", "B. Yohan Blake", "C. Usain Bolt", "D. Tyson Gay"],
+          ["A. Diamond", "B. Corundum", "C. Quartz", "D. Apatite"],
+          ["A. 48", "B. 50", "C. 51", "D. 52"]]
+
+#Leaderboard dictionary
+leaderboard = {
+        
+}
+        
+window = Tk()
+window.title("Home")
+#Sets the screen to be full
+window.attributes('-fullscreen',True)
+window.config(bg="#93b4ba")
+
+#Calling the home screen in the begining
+Home()
+
+window.mainloop()
